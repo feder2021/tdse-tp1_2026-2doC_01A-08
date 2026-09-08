@@ -48,8 +48,6 @@ El modelo implementa una secuencia estricta de operación:
 
 `ST_LED_OFF` → `ST_LED_BLINKING_SLOW` → `ST_LED_BLINKING_FAST` → `ST_LED_ON` → `ST_LED_OFF`
 
-Las transiciones de temporización dentro de los estados de parpadeo son autorreferentes, es decir, permanecen en el mismo estado mientras controlan el tiempo de conmutación del LED.
-
 | Current State | Event (Trigger) | [Guard] (Condición) | Next State | Actions / Effects (Excitaciones) |
 | :--- | :--- | :--- | :--- | :--- |
 | **ST_LED_OFF** | `EV_ACT_WELCOME` | — | **ST_LED_BLINKING_SLOW** | `tick = DEL_BLINK_SLOW` |
