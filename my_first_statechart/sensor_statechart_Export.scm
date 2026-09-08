@@ -14,7 +14,7 @@
         "id": "78749915-0da0-40a2-862f-9e8d94c7c68e",
         "attrs": {
           "name": {
-            "text": "sensor_statechart Export"
+            "text": "sensor_statechart Export Export"
           },
           "specification": {
             "text": "@EventDriven\n@SuperSteps(no)\n\ninterface:\n    in event EV_BTN_PRESSED\n    in event EV_BTN_RELEASED\n    \n    in event EV_TICK\n    \n    out event EV_SYS_BTN_DOWN\n    out event EV_SYS_BTN_UP\n\n\n    var tick : integer = 0\n    const DEL_BTN_DEBOUNCE : integer = 30"
