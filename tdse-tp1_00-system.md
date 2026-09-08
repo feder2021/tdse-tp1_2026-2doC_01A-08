@@ -34,5 +34,5 @@ El modelo del sistema gestiona la lógica central de procesamiento (*Process*) b
 | **ST_SYS_IDLE** | `EV_SYS_CAR_DETECTED` | | **ST_SYS_WAIT_FOR_BUTTON** | `EV_ACT_WELCOME` |
 | **ST_SYS_WAIT_FOR_BUTTON** | `EV_SYS_BTN_DOWN` | | **ST_SYS_TICKET_PROCESSING** | `EV_ACT_PRINT_START`, Registrar en servidor |
 | **ST_SYS_TICKET_PROCESSING** | `Tick` *(1 ms)* | | **ST_SYS_BARRIER_OPEN** | `EV_ACT_BARRIER_UP`, `tick = DEL_BARRIER_TIMEOUT` |
-| **ST_SYS_BARRIER_OPEN** | `Tick` *(1 ms)* | `[tick > 0]` | **ST_SYS_BARRIER_OPEN** | `tick = tick --` |
-| **ST_SYS_BARRIER_OPEN** | `Tick` *(1 ms)* | `[tick == 0]` *(Timeout)* | **ST_SYS_IDLE** | `EV_ACT_BARRIER_DOWN` |
+| **ST_SYS_BARRIER_OPEN** | `Tick` *(1 ms)* | `[tick > 0]` | **ST_SYS_BARRIER_OPEN** | `tick--` |
+| **ST_SYS_BARRIER_OPEN** | `Tick` *(1 ms)* | `[tick == 0]` | **ST_SYS_IDLE** | `EV_ACT_BARRIER_DOWN` |
