@@ -6,15 +6,17 @@
 
 ## 1. Descripción de Eventos y Acciones del Modelo Actuator (Paso 10)
 
-El modelo del actuador gestiona los dispositivos de salida del sistema (representados mediante LEDs indicadores de estado) bajo un esquema temporizado no bloqueante (*Update by Time Code*, $\text{period} = 1\text{ ms}$). Su función es traducir las órdenes emitidas por el módulo de procesamiento (*System Statechart*) en respuestas físicas visibles.
+El modelo del actuador gestiona el dispositivo de salida del sistema (representado mediante un LED indicador de estado) bajo un esquema temporizado no bloqueante (*Update by Time Code*, $\text{period} = 1\text{ ms}$). Su función es traducir las órdenes emitidas por el módulo de procesamiento (*System Statechart*) en respuestas físicas visibles y patrones de parpadeo diferenciados.
 
 * **Estados del Modelo (`ST_LED_NAME`):**
   - `ST_LED_OFF`: Estado en el cual el actuador/LED se encuentra apagado (nivel bajo), indicando barrera cerrada o reposo.
   - `ST_LED_ON`: Estado en el cual el actuador/LED se encuentra encendido de forma fija (nivel alto), indicando barrera abierta.
-  - `ST_LED_BLINKING`: Estado transitorio o compuesto donde el actuador/LED titila de manera intermitente, indicando proceso activo (por ejemplo, impresión de ticket).
+  - `ST_LED_BLINKING_SLOW`: Estado donde el LED titila de manera intermitente a baja velocidad, indicando presencia vehicular / bienvenida.
+  - `ST_LED_BLINKING_FAST`: Estado donde el LED titila de manera intermitente a alta velocidad, indicando proceso activo (impresión de ticket).
 
 * **Eventos de Entrada / Disparadores (`EV_ACT_`):**
-  - `EV_ACT_PRINT_START`: Señal recibida desde el sistema principal para iniciar la impresión, activando el modo intermitente (*blinking*).
+  - `EV_ACT_WELCOME`: Señal recibida para indicar presencia vehicular, activando el modo intermitente lento.
+  - `EV_ACT_PRINT_START`: Señal recibida para iniciar la impresión, activando el modo intermitente rápido.
   - `EV_ACT_BARRIER_UP`: Señal recibida para abrir la barrera, encendiendo el indicador de forma fija.
   - `EV_ACT_BARRIER_DOWN`: Señal recibida para cerrar la barrera, apagando el indicador.
   - `Tick` / `Timeout`: Disparadores periódicos de 1 ms para controlar los intervalos de conmutación del parpadeo.
@@ -25,7 +27,8 @@ El modelo del actuador gestiona los dispositivos de salida del sistema (represen
 
 * **Variables de Control y Temporización:**
   - `tick`: Variable contador decrementable que opera en milisegundos.
-  - `DEL_BLINK_PERIOD`: Constante de tiempo de retardo para definir el periodo de parpadeo.
+  - `DEL_BLINK_SLOW`: Constante de tiempo para el periodo de parpadeo lento (ej. 1000 ms).
+  - `DEL_BLINK_FAST`: Constante de tiempo para el periodo de parpadeo rápido (ej. 200 ms).
 
 ---
 
@@ -33,11 +36,18 @@ El modelo del actuador gestiona los dispositivos de salida del sistema (represen
 
 | Current State | Event (Trigger) | [Guard] (Condición) | Next State | Actions / Effects (Excitaciones) |
 | :--- | :--- | :--- | :--- | :--- |
+| **ST_LED_OFF** | `EV_ACT_WELCOME` | | **ST_LED_BLINKING_SLOW** | `tick = DEL_BLINK_SLOW` |
+| **ST_LED_OFF** | `EV_ACT_PRINT_START` | | **ST_LED_BLINKING_FAST** | `tick = DEL_BLINK_FAST` |
 | **ST_LED_OFF** | `EV_ACT_BARRIER_UP` | | **ST_LED_ON** | Encender LED (`GPIO_PIN_SET`) |
-| **ST_LED_OFF** | `EV_ACT_PRINT_START` | | **ST_LED_BLINKING** | `tick = DEL_BLINK_PERIOD` |
 | **ST_LED_ON** | `EV_ACT_BARRIER_DOWN` | | **ST_LED_OFF** | Apagar LED (`GPIO_PIN_RESET`) |
-| **ST_LED_ON** | `EV_ACT_PRINT_START` | | **ST_LED_BLINKING** | `tick = DEL_BLINK_PERIOD` |
-| **ST_LED_BLINKING** | `Tick` *(1 ms)* | `[tick > 0]` | **ST_LED_BLINKING** | `tick--` |
-| **ST_LED_BLINKING** | `Tick` *(1 ms)* | `[tick == 0]` *(Timeout)* | **ST_LED_BLINKING** | Invertir estado del LED, recargar `tick = DEL_BLINK_PERIOD` |
-| **ST_LED_BLINKING** | `EV_ACT_BARRIER_DOWN` | | **ST_LED_OFF** | Apagar LED (`GPIO_PIN_RESET`) |
-| **ST_LED_BLINKING** | `EV_ACT_BARRIER_UP` | | **ST_LED_ON** | Encender LED (`GPIO_PIN_SET`) |
+| **ST_LED_ON** | `EV_ACT_PRINT_START` | | **ST_LED_BLINKING_FAST** | `tick = DEL_BLINK_FAST` |
+| **ST_LED_ON** | `EV_ACT_WELCOME` | | **ST_LED_BLINKING_SLOW** | `tick = DEL_BLINK_SLOW` |
+| **ST_LED_BLINKING_SLOW** | `Tick` *(1 ms)* | `[tick > 0]` | **ST_LED_BLINKING_SLOW** | `tick--` |
+| **ST_LED_BLINKING_SLOW** | `Tick` *(1 ms)* | `[tick == 0]` *(Timeout)* | **ST_LED_BLINKING_SLOW** | Invertir estado del LED, recargar `tick = DEL_BLINK_SLOW` |
+| **ST_LED_BLINKING_SLOW** | `EV_ACT_PRINT_START` | | **ST_LED_BLINKING_FAST** | `tick = DEL_BLINK_FAST` |
+| **ST_LED_BLINKING_SLOW** | `EV_ACT_BARRIER_UP` | | **ST_LED_ON** | Encender LED (`GPIO_PIN_SET`) |
+| **ST_LED_BLINKING_SLOW** | `EV_ACT_BARRIER_DOWN` | | **ST_LED_OFF** | Apagar LED (`GPIO_PIN_RESET`) |
+| **ST_LED_BLINKING_FAST** | `Tick` *(1 ms)* | `[tick > 0]` | **ST_LED_BLINKING_FAST** | `tick--` |
+| **ST_LED_BLINKING_FAST** | `Tick` *(1 ms)* | `[tick == 0]` *(Timeout)* | **ST_LED_BLINKING_FAST** | Invertir estado del LED, recargar `tick = DEL_BLINK_FAST` |
+| **ST_LED_BLINKING_FAST** | `EV_ACT_BARRIER_UP` | | **ST_LED_ON** | Encender LED (`GPIO_PIN_SET`) |
+| **ST_LED_BLINKING_FAST** | `EV_ACT_BARRIER_DOWN` | | **ST_LED_OFF** | Apagar LED (`GPIO_PIN_RESET`) |
