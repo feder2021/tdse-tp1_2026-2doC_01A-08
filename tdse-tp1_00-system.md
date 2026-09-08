@@ -17,7 +17,7 @@ El modelo del sistema gestiona la lógica central de procesamiento (*Process*) b
 * **Eventos de Entrada / Disparadores (Triggers):**
   - `EV_SYS_CAR_DETECTED`: Señal de presencia vehicular proveniente del lazo magnético o cámara de entrada.
   - `EV_SYS_BTN_DOWN`: Señal limpia recibida desde el sensor que indica que el usuario presionó el botón de tickets de forma estable.
-  - `EV_TICK` / `Timeout`: Disparadores temporizados para controlar el procesamiento y tiempo de apertura de la barrera.
+  - `Tick` / `Timeout`: Disparadores periódicos de $1\text{ ms}$ para controlar el procesamiento y tiempo de apertura de la barrera[cite: 1, 2].
 
 * **Acciones y Señales hacia los Actuadores:**
   - `EV_ACT_WELCOME`: Señal enviada al display para habilitar el mensaje de bienvenida / presencia de vehículo.
@@ -31,8 +31,8 @@ El modelo del sistema gestiona la lógica central de procesamiento (*Process*) b
 
 | Current State | Event (Trigger) | [Guard] (Condición) | Next State | Actions / Effects (Excitaciones) |
 | :--- | :--- | :--- | :--- | :--- |
-| **ST_SYS_IDLE** | `EV_SYS_CAR_DETECTED` | | **ST_SYS_WAIT_FOR_BUTTON** | `raise EV_ACT_WELCOME` *(Habilitar interfaz/mensaje)* |
-| **ST_SYS_WAIT_FOR_BUTTON** | `EV_SYS_BTN_DOWN` | | **ST_SYS_TICKET_PROCESSING** | `raise EV_ACT_PRINT_START`, Registrar en servidor |
-| **ST_SYS_TICKET_PROCESSING** | `EV_TICK` | | **ST_SYS_BARRIER_OPEN** | `raise EV_ACT_BARRIER_UP`, `tick = DEL_BARRIER_TIMEOUT` |
-| **ST_SYS_BARRIER_OPEN** | `EV_TICK` | `[tick > 0]` | **ST_SYS_BARRIER_OPEN** | `tick = tick - 1` |
-| **ST_SYS_BARRIER_OPEN** | `EV_TICK` | `[tick == 0]` *(Timeout)* | **ST_SYS_IDLE** | `raise EV_ACT_BARRIER_DOWN` |
+| **ST_SYS_IDLE** | `EV_SYS_CAR_DETECTED` | | **ST_SYS_WAIT_FOR_BUTTON** | `EV_ACT_WELCOME` |
+| **ST_SYS_WAIT_FOR_BUTTON** | `EV_SYS_BTN_DOWN` | | **ST_SYS_TICKET_PROCESSING** | `EV_ACT_PRINT_START`, Registrar en servidor |
+| **ST_SYS_TICKET_PROCESSING** | `Tick` *(1 ms)* | | **ST_SYS_BARRIER_OPEN** | `EV_ACT_BARRIER_UP`, `tick = DEL_BARRIER_TIMEOUT` |
+| **ST_SYS_BARRIER_OPEN** | `Tick` *(1 ms)* | `[tick > 0]` | **ST_SYS_BARRIER_OPEN** | `tick = tick --` |
+| **ST_SYS_BARRIER_OPEN** | `Tick` *(1 ms)* | `[tick == 0]` *(Timeout)* | **ST_SYS_IDLE** | `EV_ACT_BARRIER_DOWN` |
