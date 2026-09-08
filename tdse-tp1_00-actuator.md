@@ -21,20 +21,17 @@ Vehículo detectado → Parpadeo lento → Botón de impresión → Parpadeo rá
 * `ST_LED_ON`: Estado en el cual el LED permanece encendido de forma fija (HIGH). Se alcanza cuando la barrera se levanta y representa que el vehículo puede avanzar.
 
 ### Eventos de Entrada / Disparadores (Triggers)
-* `EV_ACT_WELCOME`: Señal recibida para indicar la presencia de un vehículo. Produce la transición desde `ST_LED_OFF` hacia `ST_LED_BLINKING_SLOW`.
-* `EV_ACT_PRINT_START`: Señal recibida cuando se presiona el botón de impresión. Produce la transición desde `ST_LED_BLINKING_SLOW` hacia `ST_LED_BLINKING_FAST`.
-* `EV_ACT_BARRIER_UP`: Señal recibida para indicar que la barrera se levantó. Produce la transición desde `ST_LED_BLINKING_FAST` hacia `ST_LED_ON`.
-* `EV_ACT_BARRIER_DOWN`: Señal recibida para indicar que la barrera se bajó. Produce la transición desde `ST_LED_ON` hacia `ST_LED_OFF`.
-* `Tick`: Disparador periódico de 1 ms utilizado para implementar el parpadeo de manera no bloqueante. Permite decrementar el contador `tick` y producir el cambio de estado lógico del LED cuando el contador alcanza cero.
+* `EV_ACT_WELCOME`: Señal recibida para indicar la presencia de un vehículo.
+* `EV_ACT_PRINT_START`: Señal recibida cuando se presiona el botón de impresión.
+* `EV_ACT_BARRIER_UP`: Señal recibida para indicar que la barrera se levantó.
+* `EV_ACT_BARRIER_DOWN`: Señal recibida para indicar que la barrera se bajó.
+* `Tick`: Disparador periódico de 1 ms utilizado para implementar el parpadeo de manera no bloqueante.
 
 ### Acciones y Efectos
 Las acciones asociadas a las transiciones permiten controlar la salida del LED y el temporizador:
-* `raise EV_LED_OFF`: apaga el LED.
-* `raise EV_LED_ON`: enciende el LED.
-* `raise EV_LED_TOGGLE`: conmuta el estado lógico del LED.
-* `tick--`: decrementa el contador de tiempo en 1 ms.
-* `tick = DEL_BLINK_SLOW`: recarga el contador con el intervalo correspondiente al parpadeo lento.
-* `tick = DEL_BLINK_FAST`: recarga el contador con el intervalo correspondiente al parpadeo rápido.
+* `EV_LED_OFF`: apaga el LED.
+* `EV_LED_ON`: enciende el LED.
+* `EV_LED_TOGGLE`: conmuta el estado lógico del LED.
 
 ### Variables de Control y Temporización
 * `tick`: Variable contador decrementable utilizada para medir el tiempo restante hasta la próxima conmutación del LED.
@@ -57,9 +54,9 @@ Las transiciones de temporización dentro de los estados de parpadeo son autorre
 | :--- | :--- | :--- | :--- | :--- |
 | **ST_LED_OFF** | `EV_ACT_WELCOME` | — | **ST_LED_BLINKING_SLOW** | `tick = DEL_BLINK_SLOW` |
 | **ST_LED_BLINKING_SLOW** | `Tick` *(1 ms)* | `[tick > 0]` | **ST_LED_BLINKING_SLOW** | `tick--` |
-| **ST_LED_BLINKING_SLOW** | `Tick` *(1 ms)* | `[tick == 0]` | **ST_LED_BLINKING_SLOW** | `raise EV_LED_TOGGLE, tick = DEL_BLINK_SLOW` |
+| **ST_LED_BLINKING_SLOW** | `Tick` *(1 ms)* | `[tick == 0]` | **ST_LED_BLINKING_SLOW** | `EV_LED_TOGGLE, tick = DEL_BLINK_SLOW` |
 | **ST_LED_BLINKING_SLOW** | `EV_ACT_PRINT_START` | — | **ST_LED_BLINKING_FAST** | `tick = DEL_BLINK_FAST` |
 | **ST_LED_BLINKING_FAST** | `Tick` *(1 ms)* | `[tick > 0]` | **ST_LED_BLINKING_FAST** | `tick--` |
-| **ST_LED_BLINKING_FAST** | `Tick` *(1 ms)* | `[tick == 0]` | **ST_LED_BLINKING_FAST** | `raise EV_LED_TOGGLE, tick = DEL_BLINK_FAST` |
-| **ST_LED_BLINKING_FAST** | `EV_ACT_BARRIER_UP` | — | **ST_LED_ON** | `raise EV_LED_ON` |
-| **ST_LED_ON** | `EV_ACT_BARRIER_DOWN` | — | **ST_LED_OFF** | `raise EV_LED_OFF` |
+| **ST_LED_BLINKING_FAST** | `Tick` *(1 ms)* | `[tick == 0]` | **ST_LED_BLINKING_FAST** | `EV_LED_TOGGLE, tick = DEL_BLINK_FAST` |
+| **ST_LED_BLINKING_FAST** | `EV_ACT_BARRIER_UP` | — | **ST_LED_ON** | `EV_LED_ON` |
+| **ST_LED_ON** | `EV_ACT_BARRIER_DOWN` | — | **ST_LED_OFF** | `EV_LED_OFF` |
