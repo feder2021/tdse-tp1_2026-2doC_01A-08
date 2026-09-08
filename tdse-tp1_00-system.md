@@ -17,13 +17,17 @@ El modelo del sistema gestiona la lógica central de procesamiento (*Process*) b
 * **Eventos de Entrada / Disparadores (Triggers):**
   - `EV_SYS_CAR_DETECTED`: Señal de presencia vehicular proveniente del lazo magnético o cámara de entrada.
   - `EV_SYS_BTN_DOWN`: Señal limpia recibida desde el sensor que indica que el usuario presionó el botón de tickets de forma estable.
-  - `Tick` / `Timeout`: Disparadores periódicos de $1\text{ ms}$ para controlar el procesamiento y tiempo de apertura de la barrera[cite: 1, 2].
+  - `Tick` / `Timeout`: Disparadores periódicos de 1 ms para controlar el procesamiento y tiempo de apertura de la barrera.
 
 * **Acciones y Señales hacia los Actuadores:**
   - `EV_ACT_WELCOME`: Señal enviada al display para habilitar el mensaje de bienvenida / presencia de vehículo.
   - `EV_ACT_PRINT_START`: Señal enviada al módulo de la impresora (*Printer*) para generar el ticket.
   - `EV_ACT_BARRIER_UP`: Señal enviada al actuador de la barrera (*Barrier*) para levantar el brazo de acceso.
   - `EV_ACT_BARRIER_DOWN`: Señal enviada para cerrar la barrera transcurrido el tiempo de paso.
+  
+* **Variables de Control y Temporización:**
+  - `tick`: Variable contador decrementable que opera en milisegundos.
+  - `DEL_BARRIER_TIMEOUT`: Constante de tiempo de retardo para mantener la barrera abierta.
 
 ---
 
@@ -35,4 +39,4 @@ El modelo del sistema gestiona la lógica central de procesamiento (*Process*) b
 | **ST_SYS_WAIT_FOR_BUTTON** | `EV_SYS_BTN_DOWN` | | **ST_SYS_TICKET_PROCESSING** | `EV_ACT_PRINT_START`, Registrar en servidor |
 | **ST_SYS_TICKET_PROCESSING** | `Tick` *(1 ms)* | | **ST_SYS_BARRIER_OPEN** | `EV_ACT_BARRIER_UP`, `tick = DEL_BARRIER_TIMEOUT` |
 | **ST_SYS_BARRIER_OPEN** | `Tick` *(1 ms)* | `[tick > 0]` | **ST_SYS_BARRIER_OPEN** | `tick--` |
-| **ST_SYS_BARRIER_OPEN** | `Tick` *(1 ms)* | `[tick == 0]` | **ST_SYS_IDLE** | `EV_ACT_BARRIER_DOWN` |
+| **ST_SYS_BARRIER_OPEN** | `Tick` *(1 ms)* | `[tick == 0]` *(Timeout)* | **ST_SYS_IDLE** | `EV_ACT_BARRIER_DOWN` |

@@ -6,7 +6,7 @@
 
 ## 1. Descripción de Eventos y Acciones del Modelo Actuator (Paso 10)
 
-El modelo del actuador gestiona un único dispositivo de salida (un LED) bajo un esquema temporizado no bloqueante (*Update by Time Code*, $\text{period} = 1\text{ ms}$) para realizar la tarea de "actuar". Un LED es un dispositivo semiconductor que emite luz al aplicársele una corriente eléctrica, y su comportamiento puede variar entre encendido, apagado, titilando (*blinking*), pulsos simples o múltiples ($N$ pulsos), haciendo necesario el uso de un temporizador (`tick`).
+El modelo del actuador gestiona un único dispositivo de salida (un LED) bajo un esquema temporizado no bloqueante (*Update by Time Code*, $\text{period} = 1\text{ ms}$) para realizar la tarea de "actuar". Un LED es un dispositivo semiconductor que emite luz al aplicársele una corriente eléctrica, y su comportamiento puede variar entre encendido, apagado, titilando (*blinking*), pulsos simples o múltiples (N pulsos), haciendo necesario el uso de un temporizador (`tick`).
 
 * **Estados del Modelo (`ST_LED_NAME`):**
   - `ST_LED_OFF`: Estado en el cual el LED se encuentra apagado (nivel bajo).
@@ -17,15 +17,18 @@ El modelo del actuador gestiona un único dispositivo de salida (un LED) bajo un
   - `EV_ACT_TURN_ON`: Señal recibida desde el sistema principal para encender el LED de forma fija.
   - `EV_ACT_TURN_OFF`: Señal recibida para apagar el LED.
   - `EV_ACT_BLINK`: Señal recibida para activar el modo intermitente (*blinking*).
-  - `Tick` / `Timeout`: Disparadores periódicos de $1\text{ ms}$ para controlar los intervalos de conmutación.
+  - `Tick` / `Timeout`: Disparadores periódicos de 1 ms para controlar los intervalos de conmutación.
 
 * **Acciones y Efectos:**
   - Modificación de salidas digitales mediante funciones de bajo nivel (ej. `HAL_GPIO_WritePin`).
-  - Inicialización, decremento o recarga de variables de control de tiempo (`tick`).
+  
+* **Variables de Control y Temporización:**
+  - `tick`: Variable contador decrementable que opera en milisegundos.
+  - `DEL_BLINK_PERIOD`: Constante de tiempo de retardo para definir el periodo de parpadeo.
 
 ---
 
-## 2. Tabla de Transición de Estados del Actuador (Paso 11)[cite: 2]
+## 2. Tabla de Transición de Estados del Actuador (Paso 11)
 
 | Current State | Event (Trigger) | [Guard] (Condición) | Next State | Actions / Effects (Excitaciones) |
 | :--- | :--- | :--- | :--- | :--- |

@@ -17,6 +17,7 @@ El modelo del sensor gestiona un único botón binario bajo un esquema temporiza
 * **Eventos de Entrada (`EV_BTN_NAME`):**
   - `EV_BTN_PRESSED`: Evento disparado cuando el pin físico cambia a estado activo/bajo (presionado).
   - `EV_BTN_RELEASED`: Evento disparado cuando el pin físico cambia a estado inactivo/alto (liberado).
+  - `Tick` / `Timeout`: Disparadores periódicos de 1 ms para controlar los intervalos de estabilización.
 
 * **Señales hacia el Sistema (`EV_SYS_NAME`):**
   - `EV_SYS_BTN_DOWN`: Señal limpia generada hacia el módulo de procesamiento (*System Statechart*) al confirmar una pulsación estable.
@@ -24,7 +25,7 @@ El modelo del sensor gestiona un único botón binario bajo un esquema temporiza
 
 * **Variables de Control y Temporización:**
   - `tick`: Variable contador decrementable que opera en milisegundos.
-  - `DEL_BTN_DEBOUNCE`: Constante de tiempo de retardo para la estabilización (ej. entre $20\text{ ms}$ y $50\text{ ms}$).
+  - `DEL_BTN_DEBOUNCE`: Constante de tiempo de retardo para la estabilización (ej. entre 20 ms y 50 ms).
 
 ---
 
@@ -35,8 +36,8 @@ El modelo del sensor gestiona un único botón binario bajo un esquema temporiza
 | **ST_BTN_UP** | `EV_BTN_PRESSED` | | **ST_BTN_FALLING** | `tick = DEL_BTN_DEBOUNCE` |
 | **ST_BTN_FALLING** | `EV_BTN_RELEASED` | | **ST_BTN_UP** | *(Descartar rebote / Glitch)* |
 | **ST_BTN_FALLING** | `Tick` *(1 ms)* | `[tick > 0]` | **ST_BTN_FALLING** | `tick--` |
-| **ST_BTN_FALLING** | `Tick` *(1 ms)* | `[tick == 0]` | **ST_BTN_DOWN** | Generar señal `EV_SYS_BTN_DOWN` |
+| **ST_BTN_FALLING** | `Tick` *(1 ms)* | `[tick == 0]` *(Timeout)* | **ST_BTN_DOWN** | `EV_SYS_BTN_DOWN` |
 | **ST_BTN_DOWN** | `EV_BTN_RELEASED` | | **ST_BTN_RISING** | `tick = DEL_BTN_DEBOUNCE` |
 | **ST_BTN_RISING** | `EV_BTN_PRESSED` | | **ST_BTN_DOWN** | *(Descartar rebote / Glitch)* |
 | **ST_BTN_RISING** | `Tick` *(1 ms)* | `[tick > 0]` | **ST_BTN_RISING** | `tick--` |
-| **ST_BTN_RISING** | `Tick` *(1 ms)* | `[tick == 0]` | **ST_BTN_UP** | Generar señal `EV_SYS_BTN_UP` |
+| **ST_BTN_RISING** | `Tick` *(1 ms)* | `[tick == 0]` *(Timeout)* | **ST_BTN_UP** | `EV_SYS_BTN_UP` |
