@@ -14,7 +14,7 @@ El modelo del actuador gestiona el dispositivo de salida del sistema (representa
   - `ST_LED_BLINKING_SLOW`: Estado donde el LED titila de manera intermitente a baja velocidad, indicando presencia vehicular / bienvenida.
   - `ST_LED_BLINKING_FAST`: Estado donde el LED titila de manera intermitente a alta velocidad, indicando proceso activo (impresión de ticket).
 
-* **Eventos de Entrada / Disparadores (`EV_ACT_`):**
+* **Eventos de Entrada / Disparadores (Triggers):**
   - `EV_ACT_WELCOME`: Señal recibida para indicar presencia vehicular, activando el modo intermitente lento.
   - `EV_ACT_PRINT_START`: Señal recibida para iniciar la impresión, activando el modo intermitente rápido.
   - `EV_ACT_BARRIER_UP`: Señal recibida para abrir la barrera, encendiendo el indicador de forma fija.
