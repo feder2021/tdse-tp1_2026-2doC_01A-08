@@ -53,7 +53,7 @@
         "type": "State",
         "attrs": {
           "name": {
-            "text": "ST_SYS_WAIT_FOR_BUTTON",
+            "text": "ST_SYS_WAIT_FOR_BTN",
             "fontSize": 11
           }
         },
@@ -214,7 +214,7 @@
           {
             "attrs": {
               "text": {
-                "text": "EV_SYS_CAR_DETECTED / raise EV_ACT_WELCOME"
+                "text": "EV_SYS_BTN_DOWN / raise EV_ACT_WELCOME"
               }
             },
             "position": {
@@ -446,8 +446,8 @@
           "getters": false
         },
         "IdentifierSettings": {
-          "moduleName": "MyFirstStatechart",
-          "statemachinePrefix": "myFirstStatechart",
+          "moduleName": "SystemStatechart",
+          "statemachinePrefix": "systemStatechart",
           "separator": "_",
           "headerFilenameExtension": "h",
           "sourceFilenameExtension": "c"
