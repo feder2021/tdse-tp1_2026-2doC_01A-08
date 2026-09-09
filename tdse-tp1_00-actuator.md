@@ -29,9 +29,9 @@ Vehículo detectado → Parpadeo lento → Botón de impresión → Parpadeo rá
 
 ### Acciones y Efectos
 Las acciones asociadas a las transiciones permiten controlar la salida del LED y el temporizador:
-* `raise EV_LED_OFF`: apaga el LED.
-* `raise EV_LED_ON`: enciende el LED.
-* `raise EV_LED_TOGGLE`: conmuta el estado lógico del LED.
+* `EV_LED_OFF`: apaga el LED.
+* `EV_LED_ON`: enciende el LED.
+* `EV_LED_TOGGLE`: conmuta el estado lógico del LED.
 * `tick--`: decrementa el contador de tiempo en 1 ms.
 * `tick = DEL_BLINK_SLOW`: recarga el contador con el intervalo correspondiente al parpadeo lento.
 * `tick = DEL_BLINK_FAST`: recarga el contador con el intervalo correspondiente al parpadeo rápido.
