@@ -57,9 +57,9 @@ Las transiciones de temporización dentro de los estados de parpadeo son autorre
 | :--- | :--- | :--- | :--- | :--- |
 | **ST_LED_OFF** | `EV_ACT_WELCOME` | — | **ST_LED_BLINKING_SLOW** | `tick = DEL_BLINK_SLOW` |
 | **ST_LED_BLINKING_SLOW** | `Tick` *(1 ms)* | `[tick > 0]` | **ST_LED_BLINKING_SLOW** | `tick--` |
-| **ST_LED_BLINKING_SLOW** | `Tick` *(1 ms)* | `[tick == 0]` | **ST_LED_BLINKING_SLOW** | `raise EV_LED_TOGGLE, tick = DEL_BLINK_SLOW` |
+| **ST_LED_BLINKING_SLOW** | `Tick` *(1 ms)* | `[tick == 0]` | **ST_LED_BLINKING_SLOW** | `EV_LED_TOGGLE, tick = DEL_BLINK_SLOW` |
 | **ST_LED_BLINKING_SLOW** | `EV_ACT_PRINT_START` | — | **ST_LED_BLINKING_FAST** | `tick = DEL_BLINK_FAST` |
 | **ST_LED_BLINKING_FAST** | `Tick` *(1 ms)* | `[tick > 0]` | **ST_LED_BLINKING_FAST** | `tick--` |
-| **ST_LED_BLINKING_FAST** | `Tick` *(1 ms)* | `[tick == 0]` | **ST_LED_BLINKING_FAST** | `raise EV_LED_TOGGLE, tick = DEL_BLINK_FAST` |
-| **ST_LED_BLINKING_FAST** | `EV_ACT_BARRIER_UP` | — | **ST_LED_ON** | `raise EV_LED_ON` |
-| **ST_LED_ON** | `EV_ACT_BARRIER_DOWN` | — | **ST_LED_OFF** | `raise EV_LED_OFF` |
+| **ST_LED_BLINKING_FAST** | `Tick` *(1 ms)* | `[tick == 0]` | **ST_LED_BLINKING_FAST** | `EV_LED_TOGGLE, tick = DEL_BLINK_FAST` |
+| **ST_LED_BLINKING_FAST** | `EV_ACT_BARRIER_UP` | — | **ST_LED_ON** | `EV_LED_ON` |
+| **ST_LED_ON** | `EV_ACT_BARRIER_DOWN` | — | **ST_LED_OFF** | `EV_LED_OFF` |
