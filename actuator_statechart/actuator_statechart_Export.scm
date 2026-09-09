@@ -17,7 +17,7 @@
             "text": "actuator_statechart Export"
           },
           "specification": {
-            "text": "namespace actuator_statechart\r\n\r\ninterface:\r\n    // Eventos de Entrada (Disparadores desde System)\r\n    in event EV_ACT_WELCOME\r\n    in event EV_ACT_PRINT_START\r\n    in event EV_ACT_BARRIER_UP\r\n    in event EV_ACT_BARRIER_DOWN\r\n    \r\n    in event EV_TICK\r\n\r\n    // Eventos de Salida (Acciones sobre el hardware del LED)\r\n    out event EV_LED_ON\r\n    out event EV_LED_OFF\r\n    out event EV_LED_TOGGLE\r\n    \r\n\r\n    // Variables de Control y Temporización\r\n    var tick : integer = 0\r\n    const DEL_BLINK_SLOW : integer = 1000\r\n    const DEL_BLINK_FAST : integer = 200\r\n    \r\n    "
+            "text": "namespace actuator_statechart\r\n\r\ninterface:\r\n    // Eventos de Entrada (Disparadores desde System)\r\n    in event EV_ACT_WELCOME\r\n    in event EV_ACT_OFF\r\n    in event EV_ACT_PRINT_START\r\n    in event EV_ACT_BARRIER_UP\r\n    in event EV_ACT_BARRIER_DOWN\r\n    \r\n    in event EV_TICK\r\n\r\n    // Eventos de Salida (Acciones sobre el hardware del LED)\r\n    out event EV_LED_ON\r\n    out event EV_LED_OFF\r\n    out event EV_LED_TOGGLE\r\n    \r\n\r\n    // Variables de Control y Temporización\r\n    var tick : integer = 0\r\n    const DEL_BLINK_SLOW : integer = 1000\r\n    const DEL_BLINK_FAST : integer = 200\r\n    \r\n    "
           }
         },
         "z": 1
@@ -28,8 +28,8 @@
           "y": -162
         },
         "size": {
-          "width": 126,
-          "height": 60
+          "height": 60,
+          "width": 126
         },
         "type": "State",
         "attrs": {
@@ -47,8 +47,8 @@
           "y": 4
         },
         "size": {
-          "width": 126,
-          "height": 60
+          "height": 60,
+          "width": 126
         },
         "type": "State",
         "attrs": {
@@ -67,67 +67,13 @@
         ]
       },
       {
-        "type": "Transition",
-        "attrs": {},
-        "source": {
-          "id": "9560b739-9aad-4438-a4a8-706f3dc6da52"
-        },
-        "target": {
-          "id": "e360fb48-9738-468d-90ad-fc17ed7ff95e",
-          "anchor": {
-            "name": "topLeft",
-            "args": {
-              "dx": "52.381%",
-              "dy": "23.333%",
-              "rotate": true
-            }
-          },
-          "priority": true
-        },
-        "connector": {
-          "name": "rounded"
-        },
-        "labels": [
-          {
-            "attrs": {
-              "text": {
-                "text": "EV_ACT_WELCOME / tick = DEL_BLINK_SLOW"
-              }
-            },
-            "position": {
-              "offset": -123,
-              "angle": 0
-            }
-          },
-          {
-            "attrs": {
-              "label": {
-                "text": "1"
-              }
-            }
-          },
-          {
-            "attrs": {}
-          },
-          {
-            "attrs": {}
-          }
-        ],
-        "id": "c8d48845-0371-4725-a59a-62f110213863",
-        "z": 31,
-        "router": {
-          "name": "orthogonal"
-        },
-        "vertices": []
-      },
-      {
         "position": {
           "x": 810,
           "y": 288
         },
         "size": {
-          "width": 126,
-          "height": 60
+          "height": 60,
+          "width": 126
         },
         "type": "State",
         "attrs": {
@@ -198,8 +144,8 @@
             "y": 324
           },
           {
-            "x": 684,
-            "y": 90
+            "x": 619,
+            "y": 96
           }
         ]
       },
@@ -460,9 +406,124 @@
         "parent": "def3a10c-9281-44b3-b30f-e39c363d3b99"
       },
       {
+        "type": "Transition",
+        "attrs": {},
+        "source": {
+          "id": "e360fb48-9738-468d-90ad-fc17ed7ff95e"
+        },
+        "target": {
+          "id": "9560b739-9aad-4438-a4a8-706f3dc6da52",
+          "anchor": {
+            "name": "topLeft",
+            "args": {
+              "dx": "16.667%",
+              "dy": "76.667%",
+              "rotate": true
+            }
+          },
+          "priority": true
+        },
+        "connector": {
+          "name": "rounded"
+        },
+        "labels": [
+          {
+            "attrs": {
+              "text": {
+                "text": "EV_ACT_OFF / raise EV_LED_OFF"
+              }
+            },
+            "position": {
+              "distance": 0.5283018867924528,
+              "offset": -87,
+              "angle": 0
+            }
+          },
+          {
+            "attrs": {
+              "label": {
+                "text": "3"
+              }
+            }
+          },
+          {
+            "attrs": {}
+          },
+          {
+            "attrs": {}
+          }
+        ],
+        "id": "f05cd89a-4672-40b5-a26e-33a469a9a725",
+        "z": 43,
+        "router": {
+          "name": "orthogonal"
+        },
+        "vertices": []
+      },
+      {
+        "type": "Transition",
+        "attrs": {},
+        "source": {
+          "id": "9560b739-9aad-4438-a4a8-706f3dc6da52"
+        },
+        "target": {
+          "id": "e360fb48-9738-468d-90ad-fc17ed7ff95e",
+          "anchor": {
+            "name": "topLeft",
+            "args": {
+              "dx": "68.254%",
+              "dy": "3.333%",
+              "rotate": true
+            }
+          },
+          "priority": true
+        },
+        "connector": {
+          "name": "rounded"
+        },
+        "labels": [
+          {
+            "attrs": {
+              "text": {
+                "text": "EV_ACT_WELCOME / tick = DEL_BLINK_SLOW"
+              }
+            },
+            "position": {
+              "distance": 0.43396226415094347,
+              "offset": -113,
+              "angle": 0
+            }
+          },
+          {
+            "attrs": {
+              "label": {
+                "text": "1"
+              }
+            }
+          },
+          {
+            "attrs": {}
+          },
+          {
+            "attrs": {}
+          }
+        ],
+        "id": "c8d48845-0371-4725-a59a-62f110213863",
+        "z": 44,
+        "router": {
+          "name": "orthogonal"
+        },
+        "vertices": [
+          {
+            "x": 902,
+            "y": -56
+          }
+        ]
+      },
+      {
         "position": {
           "x": 872,
-          "y": -239
+          "y": -256
         },
         "size": {
           "height": 18,
@@ -472,7 +533,7 @@
         "entryKind": "Initial",
         "attrs": {},
         "id": "68919e12-6496-4959-ad38-00b50ec694bd",
-        "z": 43,
+        "z": 51,
         "embeds": [
           "fa1afca6-8113-473a-8f3d-165e5af4eb32"
         ]
@@ -486,7 +547,7 @@
         },
         "position": {
           "x": 872,
-          "y": -224
+          "y": -241
         },
         "attrs": {
           "label": {
@@ -497,7 +558,7 @@
           }
         },
         "id": "fa1afca6-8113-473a-8f3d-165e5af4eb32",
-        "z": 44,
+        "z": 52,
         "parent": "68919e12-6496-4959-ad38-00b50ec694bd"
       },
       {
@@ -541,7 +602,7 @@
           }
         ],
         "id": "4d2800fb-7ca7-4af4-a0a6-58a3cfde700d",
-        "z": 45,
+        "z": 53,
         "router": {
           "name": "orthogonal"
         },
@@ -579,8 +640,8 @@
           "getters": false
         },
         "IdentifierSettings": {
-          "moduleName": "MyFirstStatechart",
-          "statemachinePrefix": "myFirstStatechart",
+          "moduleName": "ActuatorStatechart",
+          "statemachinePrefix": "actuatorStatechart",
           "separator": "_",
           "headerFilenameExtension": "h",
           "sourceFilenameExtension": "c"
