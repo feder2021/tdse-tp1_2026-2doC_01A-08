@@ -14,7 +14,7 @@
         "id": "78749915-0da0-40a2-862f-9e8d94c7c68e",
         "attrs": {
           "name": {
-            "text": "system_statechart Export Export"
+            "text": "system_statechart Export"
           },
           "specification": {
             "text": "namespace system_statechart\r\n\r\ninterface:\r\n    in event EV_SYS_CAR_ARRIVE\r\n    in event EV_SYS_BTN_PRESSED\r\n    in event EV_SYS_CAR_LEAVE\r\n\r\n    \r\n    out event EV_ACT_WELCOME\r\n    out event EV_ACT_PRINT_TICKET\r\n    out event EV_ACT_OPEN_BARRIER\r\n    out event EV_ACT_CLOSE_BARRIER\r\n    out event EV_ACT_CAR_INSIDE\r\n"
