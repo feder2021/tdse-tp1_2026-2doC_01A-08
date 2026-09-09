@@ -6,7 +6,7 @@
 
 ## 1. Descripción de Eventos y Acciones del Modelo Sensor (Paso 06)
 
-El modelo del sensor gestiona un único botón binario bajo un esquema temporizado no bloqueante (*Update by Time Code*, $\text{period} = 1\text{ ms}$) para realizar la tarea de escrutinio y filtrado de rebotes mecánicos (*debouncing*).
+El modelo del sensor gestiona un único botón binario (botón azul `B1` de la placa NUCLEO-F103RB) bajo un esquema temporizado no bloqueante (*Update by Time Code*, $\text{period} = 1\text{ ms}$) para realizar el filtrado de rebotes mecánicos (*debouncing*).
 
 * **Estados del Modelo (`ST_BTN_NAME`):**
   - `ST_BTN_UP`: Estado de reposo donde el botón se encuentra liberado (nivel alto lógico).
@@ -25,19 +25,23 @@ El modelo del sensor gestiona un único botón binario bajo un esquema temporiza
 
 * **Variables de Control y Temporización:**
   - `tick`: Variable contador decrementable que opera en milisegundos.
-  - `DEL_BTN_DEBOUNCE`: Constante de tiempo de retardo para la estabilización (ej. entre 20 ms y 50 ms).
+  - `DEL_BTN_DEBOUNCE`: Constante de tiempo de retardo para la estabilización (20 ms).
 
 ---
 
 ## 2. Tabla de Transición de Estados del Sensor (Paso 07)
 
+El modelo implementa el ciclo de filtrado del botón:
+
+`ST_BTN_UP` -> `ST_BTN_FALLING` -> `ST_BTN_DOWN` -> `ST_BTN_RISING` -> `ST_BTN_UP`
+
 | Current State | Event (Trigger) | [Guard] (Condición) | Next State | Actions / Effects (Excitaciones) |
 | :--- | :--- | :--- | :--- | :--- |
-| **ST_BTN_UP** | `EV_BTN_PRESSED` | | **ST_BTN_FALLING** | `tick = DEL_BTN_DEBOUNCE` |
-| **ST_BTN_FALLING** | `EV_BTN_RELEASED` | | **ST_BTN_UP** | *(Descartar rebote / Glitch)* |
+| **ST_BTN_UP** | `EV_BTN_PRESSED` | — | **ST_BTN_FALLING** | `tick = DEL_BTN_DEBOUNCE` |
+| **ST_BTN_FALLING** | `EV_BTN_RELEASED` | — | **ST_BTN_UP** | *(Descartar rebote / Glitch)* |
 | **ST_BTN_FALLING** | `Tick` *(1 ms)* | `[tick > 0]` | **ST_BTN_FALLING** | `tick--` |
-| **ST_BTN_FALLING** | `Tick` *(1 ms)* | `[tick == 0]` *(Timeout)* | **ST_BTN_DOWN** | `EV_SYS_BTN_DOWN` |
-| **ST_BTN_DOWN** | `EV_BTN_RELEASED` | | **ST_BTN_RISING** | `tick = DEL_BTN_DEBOUNCE` |
-| **ST_BTN_RISING** | `EV_BTN_PRESSED` | | **ST_BTN_DOWN** | *(Descartar rebote / Glitch)* |
+| **ST_BTN_FALLING** | `Tick` *(1 ms)* | `[tick == 0]` | **ST_BTN_DOWN** | `EV_SYS_BTN_DOWN` |
+| **ST_BTN_DOWN** | `EV_BTN_RELEASED` | — | **ST_BTN_RISING** | `tick = DEL_BTN_DEBOUNCE` |
+| **ST_BTN_RISING** | `EV_BTN_PRESSED` | — | **ST_BTN_DOWN** | *(Descartar rebote / Glitch)* |
 | **ST_BTN_RISING** | `Tick` *(1 ms)* | `[tick > 0]` | **ST_BTN_RISING** | `tick--` |
-| **ST_BTN_RISING** | `Tick` *(1 ms)* | `[tick == 0]` *(Timeout)* | **ST_BTN_UP** | `EV_SYS_BTN_UP` |
+| **ST_BTN_RISING** | `Tick` *(1 ms)* | `[tick == 0]` | **ST_BTN_UP** | `EV_SYS_BTN_UP` |
