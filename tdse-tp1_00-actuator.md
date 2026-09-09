@@ -12,7 +12,8 @@ Su función es traducir las órdenes emitidas por el módulo de procesamiento (*
 
 El comportamiento esperado del actuador sigue la siguiente secuencia:
 
-Vehículo detectado → Parpadeo lento → Botón de impresión → Parpadeo rápido → Barrera arriba → LED encendido fijo → Barrera abajo → LED apagado
+Vehículo detectado → Parpadeo lento → Botón de impresión → Parpadeo rápido → Barrera arriba → LED encendido fijo → Barrera abajo → LED apagado  
+*(Escape por inactividad: Parpadeo lento → LED apagado)*
 
 ### Estados del Modelo (`ST_LED_NAME`)
 * `ST_LED_OFF`: Estado inicial y de reposo. El LED se encuentra apagado (LOW), indicando que la barrera está cerrada y no hay un proceso activo.
@@ -24,7 +25,8 @@ Vehículo detectado → Parpadeo lento → Botón de impresión → Parpadeo rá
 * `EV_ACT_WELCOME`: Señal recibida para indicar la presencia de un vehículo. Produce la transición desde `ST_LED_OFF` hacia `ST_LED_BLINKING_SLOW`.
 * `EV_ACT_PRINT_START`: Señal recibida cuando se presiona el botón de impresión. Produce la transición desde `ST_LED_BLINKING_SLOW` hacia `ST_LED_BLINKING_FAST`.
 * `EV_ACT_BARRIER_UP`: Señal recibida para indicar que la barrera se levantó. Produce la transición desde `ST_LED_BLINKING_FAST` hacia `ST_LED_ON`.
-* `EV_ACT_BARRIER_DOWN`: Señal recibida para indicar que la barrera se bajó. Produce la transición desde `ST_LED_ON` hacia `ST_LED_OFF`.
+* `EV_ACT_BARRIER_DOWN`: Señal recibida para indicar que la barrera se bajó tras completar el paso. Produce la transición desde `ST_LED_ON` hacia `ST_LED_OFF`.
+* `EV_ACT_OFF`: Señal recibida para apagar el indicador tras la cancelación por inactividad (el vehículo se retiró). Produce la transición desde `ST_LED_BLINKING_SLOW` hacia `ST_LED_OFF`.
 * `Tick`: Disparador periódico de 1 ms utilizado para implementar el parpadeo de manera no bloqueante. Permite decrementar el contador `tick` y producir el cambio de estado lógico del LED cuando el contador alcanza cero.
 
 ### Acciones y Efectos
@@ -47,9 +49,10 @@ El contador `tick` es actualizado mediante un `Tick` periódico cada 1 ms, evita
 
 ## 2. Tabla de Transición de Estados del Actuador (Paso 11)
 
-El modelo implementa una secuencia estricta de operación:
+El modelo implementa la secuencia operacional:
 
-`ST_LED_OFF` -> `ST_LED_BLINKING_SLOW` -> `ST_LED_BLINKING_FAST` -> `ST_LED_ON` -> `ST_LED_OFF`
+`ST_LED_OFF` -> `ST_LED_BLINKING_SLOW` -> `ST_LED_BLINKING_FAST` -> `ST_LED_ON` -> `ST_LED_OFF`  
+*(Escape por inactividad: `ST_LED_BLINKING_SLOW` -> `ST_LED_OFF`)*
 
 Las transiciones de temporización dentro de los estados de parpadeo son autorreferentes, es decir, permanecen en el mismo estado mientras controlan el tiempo de conmutación del LED.
 
@@ -58,6 +61,7 @@ Las transiciones de temporización dentro de los estados de parpadeo son autorre
 | **ST_LED_OFF** | `EV_ACT_WELCOME` | — | **ST_LED_BLINKING_SLOW** | `tick = DEL_BLINK_SLOW` |
 | **ST_LED_BLINKING_SLOW** | `Tick` *(1 ms)* | `[tick > 0]` | **ST_LED_BLINKING_SLOW** | `tick--` |
 | **ST_LED_BLINKING_SLOW** | `Tick` *(1 ms)* | `[tick == 0]` | **ST_LED_BLINKING_SLOW** | `EV_LED_TOGGLE, tick = DEL_BLINK_SLOW` |
+| **ST_LED_BLINKING_SLOW** | `EV_ACT_OFF` | — | **ST_LED_OFF** | `EV_LED_OFF` *(Cancelación por inactividad)* |
 | **ST_LED_BLINKING_SLOW** | `EV_ACT_PRINT_START` | — | **ST_LED_BLINKING_FAST** | `tick = DEL_BLINK_FAST` |
 | **ST_LED_BLINKING_FAST** | `Tick` *(1 ms)* | `[tick > 0]` | **ST_LED_BLINKING_FAST** | `tick--` |
 | **ST_LED_BLINKING_FAST** | `Tick` *(1 ms)* | `[tick == 0]` | **ST_LED_BLINKING_FAST** | `EV_LED_TOGGLE, tick = DEL_BLINK_FAST` |

@@ -19,10 +19,11 @@ El modelo del sistema gestiona la lógica central de procesamiento (*Process*) b
   - `Tick` / `Timeout`: Disparadores periódicos de 1 ms para controlar los temporizadores de inactividad, procesamiento y cierre de la barrera.
 
 * **Acciones y Señales hacia los Actuadores:**
-  - `EV_ACT_WELCOME`: Señal para activar el patrón de parpadeo lento (vehículo presente).
-  - `EV_ACT_PRINT_START`: Señal para activar el patrón de parpadeo rápido (impresión activa).
-  - `EV_ACT_BARRIER_UP`: Señal para encender de forma fija el indicador de paso (barrera arriba).
-  - `EV_ACT_BARRIER_DOWN`: Señal enviada al cerrar la barrera o cancelar por inactividad.
+  - `EV_ACT_WELCOME`: Señal enviada para activar el patrón de parpadeo lento (vehículo presente).
+  - `EV_ACT_PRINT_START`: Señal enviada para activar el patrón de parpadeo rápido (impresión activa).
+  - `EV_ACT_BARRIER_UP`: Señal enviada para encender de forma fija el indicador de paso (barrera arriba).
+  - `EV_ACT_BARRIER_DOWN`: Señal enviada al cerrar la barrera transcurrido el tiempo de paso.
+  - `EV_ACT_OFF`: Señal enviada para apagar los indicadores y cancelar la operación por inactividad.
 
 * **Variables de Control y Temporización:**
   - `tick`: Variable contador decrementable que opera en milisegundos.
@@ -40,7 +41,7 @@ El modelo del sistema gestiona la lógica central de procesamiento (*Process*) b
 | :--- | :--- | :--- | :--- | :--- |
 | **ST_SYS_IDLE** | `EV_SYS_BTN_DOWN` | — | **ST_SYS_WAIT_FOR_BTN** | `EV_ACT_WELCOME, tick = DEL_SYS_TIMEOUT` |
 | **ST_SYS_WAIT_FOR_BTN** | `Tick` *(1 ms)* | `[tick > 0]` | **ST_SYS_WAIT_FOR_BTN** | `tick--` |
-| **ST_SYS_WAIT_FOR_BTN** | `Tick` *(1 ms)* | `[tick == 0]` | **ST_SYS_IDLE** | `EV_ACT_BARRIER_DOWN` *(Inactividad / Auto se fue)* |
+| **ST_SYS_WAIT_FOR_BTN** | `Tick` *(1 ms)* | `[tick == 0]` | **ST_SYS_IDLE** | `EV_ACT_OFF` *(Cancelación por inactividad)* |
 | **ST_SYS_WAIT_FOR_BTN** | `EV_SYS_BTN_DOWN` | `[tick > 0]` | **ST_SYS_TICKET_PROCESSING** | `EV_ACT_PRINT_START` |
 | **ST_SYS_TICKET_PROCESSING** | `Tick` *(1 ms)* | — | **ST_SYS_BARRIER_OPEN** | `EV_ACT_BARRIER_UP, tick = DEL_BARRIER_TIMEOUT` |
 | **ST_SYS_BARRIER_OPEN** | `Tick` *(1 ms)* | `[tick > 0]` | **ST_SYS_BARRIER_OPEN** | `tick--` |
