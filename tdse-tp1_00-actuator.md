@@ -6,29 +6,42 @@
 
 ## 1. Descripción de Eventos y Acciones del Modelo Actuator (Paso 10)
 
-El modelo del actuador gestiona el dispositivo de salida físico del sistema, simplificado y representado mediante un **único LED** que simula el estado de la barrera de acceso (*Barrier Gate*), bajo un esquema temporizado no bloqueante (*Update by Time Code*, $\text{period} = 1\text{ ms}$).
+El modelo del actuador gestiona el dispositivo de salida del sistema, representado mediante un único LED indicador que simula los estados y movimientos de la barrera de acceso bajo un esquema temporizado no bloqueante (*Update by Time Code*, $\text{period} = 1\text{ ms}$).
 
 * **Estados del Modelo (`ST_BARRIER_NAME`):**
-  - `ST_BARRIER_CLOSED`: La barrera se encuentra abajo (LED apagado). Estado de reposo y restricción de paso.
-  - `ST_BARRIER_OPEN`: La barrera se encuentra arriba (LED encendido fijo). Estado de paso habilitado para el vehículo.
+  - `ST_BARRIER_CLOSED`: Barrera cerrada (LED apagado). Reposo.
+  - `ST_BARRIER_RAISING`: Barrera en proceso de apertura (LED titilando a frecuencia 1, ej. 200 ms).
+  - `ST_BARRIER_OPEN`: Barrera completamente levantada (LED encendido fijo).
+  - `ST_BARRIER_LOWERING`: Barrera en proceso de cierre (LED titilando a frecuencia 2, ej. 500 ms).
 
 * **Eventos de Entrada / Disparadores (Triggers):**
-  - `EV_ACT_OPEN_BARRIER`: Orden recibida desde el módulo `System` para abrir la barrera.
-  - `EV_ACT_CLOSE_BARRIER`: Orden recibida desde el módulo `System` para cerrar la barrera.
+  - `EV_ACT_OPEN_BARRIER`: Orden recibida desde `System` para iniciar la apertura de la barrera.
+  - `EV_ACT_CLOSE_BARRIER`: Orden recibida desde `System` para iniciar el cierre de la barrera.
+  - `Tick`: Disparador periódico de 1 ms para controlar los tiempos de parpadeo y la duración del movimiento del brazo mecánico.
 
-* **Acciones y Efectos en Hardware (GPIO):**
-  - `EV_LED_ON`: Enciende el LED de la barrera (`GPIO_PIN_SET`).
-  - `EV_LED_OFF`: Apaga el LED de la barrera (`GPIO_PIN_RESET`).
+* **Señales o acciones:**
+  - `EV_LED_ON`: Enciende el LED.
+  - `EV_LED_OFF`: Apaga el LED.
+  - `EV_LED_TOGGLE`: Conmuta el estado del LED.
+
+* **Variables de control y Temporización:**
+  - `tick`: Variable contador decrementable que opera en milisegundos.
+  - `DEL_RAISING`: Tiempo total que tarda la barrera en levantarse (ej. 2000 ms).
+  - `DEL_LOWERING`: Tiempo total que tarda la barrera en bajarse (ej. 2000 ms).
+  - `DEL_FREQ_1`: Intervalo de conmutación de parpadeo rápido.
+  - `DEL_FREQ_2`: Intervalo de conmutación de parpadeo lento.
 
 ---
 
 ## 2. Tabla de Transición de Estados del Actuador (Paso 11)
 
-El modelo implementa la conmutación directa del LED indicador de barrera:
-
-`ST_BARRIER_CLOSED` <-> `ST_BARRIER_OPEN`
+Secuencia principal: `ST_BARRIER_CLOSED` -> `ST_BARRIER_RAISING` -> `ST_BARRIER_OPEN` -> `ST_BARRIER_LOWERING` -> `ST_BARRIER_CLOSED`
 
 | Current State | Event (Trigger) | [Guard] (Condición) | Next State | Actions / Effects (Excitaciones) |
 | :--- | :--- | :--- | :--- | :--- |
-| **ST_BARRIER_CLOSED** | `EV_ACT_OPEN_BARRIER` | — | **ST_BARRIER_OPEN** | `EV_LED_ON` |
-| **ST_BARRIER_OPEN** | `EV_ACT_CLOSE_BARRIER` | — | **ST_BARRIER_CLOSED** | `EV_LED_OFF` |
+| **ST_BARRIER_CLOSED** | `EV_ACT_OPEN_BARRIER` | — | **ST_BARRIER_RAISING** | `tick = DEL_RAISING, tick_blink = DEL_FREQ_1` |
+| **ST_BARRIER_RAISING** | `Tick` *(1 ms)* | `[tick > 0]` | **ST_BARRIER_RAISING** | `tick--, (lógica toggle con tick_blink)` |
+| **ST_BARRIER_RAISING** | `Tick` *(1 ms)* | `[tick == 0]` | **ST_BARRIER_OPEN** | `EV_LED_ON` |
+| **ST_BARRIER_OPEN** | `EV_ACT_CLOSE_BARRIER` | — | **ST_BARRIER_LOWERING** | `tick = DEL_LOWERING, tick_blink = DEL_FREQ_2` |
+| **ST_BARRIER_LOWERING** | `Tick` *(1 ms)* | `[tick > 0]` | **ST_BARRIER_LOWERING** | `tick--, (lógica toggle con tick_blink)` |
+| **ST_BARRIER_LOWERING** | `Tick` *(1 ms)* | `[tick == 0]` | **ST_BARRIER_CLOSED** | `EV_LED_OFF` |

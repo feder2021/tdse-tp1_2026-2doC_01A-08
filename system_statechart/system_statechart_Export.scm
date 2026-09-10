@@ -17,7 +17,7 @@
             "text": "system_statechart Export"
           },
           "specification": {
-            "text": "namespace system_statechart\r\n\r\ninterface:\r\n    in event EV_SYS_CAR_ARRIVE\r\n    in event EV_SYS_BTN_PRESSED\r\n    in event EV_SYS_CAR_LEAVE\r\n\r\n    \r\n    out event EV_ACT_WELCOME\r\n    out event EV_ACT_PRINT_TICKET\r\n    out event EV_ACT_OPEN_BARRIER\r\n    out event EV_ACT_CLOSE_BARRIER\r\n    out event EV_ACT_CAR_INSIDE\r\n"
+            "text": "namespace system_statechart\r\n\r\ninterface:\r\n    in event EV_SYS_CAMERA_ON\r\n    in event EV_SYS_BTN_DOWN\r\n    in event EV_SYS_COIL_OFF\r\n\r\n    out event EV_ACT_OPEN_BARRIER\r\n    out event EV_ACT_CLOSE_BARRIER\r\n\r\n"
           }
         },
         "z": 1
@@ -72,7 +72,7 @@
         "type": "State",
         "attrs": {
           "name": {
-            "text": "ST_SYS_TICKET_OPEN_BARRIER",
+            "text": "ST_SYS_BARRIER_OPEN",
             "fontSize": 11
           }
         },
@@ -192,12 +192,12 @@
           {
             "attrs": {
               "text": {
-                "text": "EV_SYS_BTN_PRESSED / raise EV_ACT_PRINT_TICKET ; raise EV_ACT_OPEN_BARRIER"
+                "text": "EV_SYS_BTN_DOWN / raise EV_ACT_OPEN_BARRIER"
               }
             },
             "position": {
-              "distance": 0.4642857142857143,
-              "offset": -213,
+              "distance": 0.47619047619047616,
+              "offset": -130,
               "angle": 0
             }
           },
@@ -217,70 +217,6 @@
         ],
         "id": "56989e5f-14f6-4fd0-9a48-264f2a2a40e7",
         "z": 10,
-        "router": {
-          "name": "orthogonal"
-        },
-        "vertices": []
-      },
-      {
-        "type": "Transition",
-        "attrs": {},
-        "source": {
-          "id": "4df4b5af-7208-47ef-a797-1ba2ed0eba0f",
-          "anchor": {
-            "name": "topLeft",
-            "args": {
-              "dx": "47.475%",
-              "dy": "93.333%",
-              "rotate": true
-            }
-          },
-          "priority": true
-        },
-        "target": {
-          "id": "45bdc2b4-2477-4f56-a49c-919cf173803c",
-          "anchor": {
-            "name": "topLeft",
-            "args": {
-              "dx": "47.475%",
-              "dy": "13.333%",
-              "rotate": true
-            }
-          },
-          "priority": true
-        },
-        "connector": {
-          "name": "rounded"
-        },
-        "labels": [
-          {
-            "attrs": {
-              "text": {
-                "text": "EV_SYS_CAR_ARRIVE / raise EV_ACT_WELCOME"
-              }
-            },
-            "position": {
-              "distance": 0.4642857142857143,
-              "offset": -126,
-              "angle": 0
-            }
-          },
-          {
-            "attrs": {
-              "label": {
-                "text": "1"
-              }
-            }
-          },
-          {
-            "attrs": {}
-          },
-          {
-            "attrs": {}
-          }
-        ],
-        "id": "889748c5-bdc4-42b4-b192-ea68628b15a8",
-        "z": 14,
         "router": {
           "name": "orthogonal"
         },
@@ -311,12 +247,12 @@
           {
             "attrs": {
               "text": {
-                "text": "EV_SYS_CAR_LEAVE / raise EV_ACT_CLOSE_BARRIER ; raise EV_ACT_CAR_INSIDE"
+                "text": "EV_SYS_COIL_OFF / raise EV_ACT_CLOSE_BARRIER"
               }
             },
             "position": {
-              "distance": 0.50096018934997,
-              "offset": 209,
+              "distance": 0.5040199666346195,
+              "offset": 132,
               "angle": 0
             }
           },
@@ -341,14 +277,82 @@
         },
         "vertices": [
           {
-            "x": 623,
-            "y": 333
+            "x": 294,
+            "y": 321
           },
           {
-            "x": 623,
-            "y": 109
+            "x": 443,
+            "y": 193
+          },
+          {
+            "x": 443,
+            "y": 110
           }
         ]
+      },
+      {
+        "type": "Transition",
+        "attrs": {},
+        "source": {
+          "id": "4df4b5af-7208-47ef-a797-1ba2ed0eba0f",
+          "anchor": {
+            "name": "topLeft",
+            "args": {
+              "dx": "50%",
+              "dy": "96.667%",
+              "rotate": true
+            }
+          },
+          "priority": true
+        },
+        "target": {
+          "id": "45bdc2b4-2477-4f56-a49c-919cf173803c",
+          "anchor": {
+            "name": "topLeft",
+            "args": {
+              "dx": "50%",
+              "dy": "11.667%",
+              "rotate": true
+            }
+          },
+          "priority": true
+        },
+        "connector": {
+          "name": "rounded"
+        },
+        "labels": [
+          {
+            "attrs": {
+              "text": {
+                "text": "EV_SYS_CAMERA_ON"
+              }
+            },
+            "position": {
+              "distance": 0.44047619047619047,
+              "offset": -54,
+              "angle": 0
+            }
+          },
+          {
+            "attrs": {
+              "label": {
+                "text": "1"
+              }
+            }
+          },
+          {
+            "attrs": {}
+          },
+          {
+            "attrs": {}
+          }
+        ],
+        "id": "889748c5-bdc4-42b4-b192-ea68628b15a8",
+        "z": 16,
+        "router": {
+          "name": "orthogonal"
+        },
+        "vertices": []
       }
     ]
   },
@@ -382,8 +386,8 @@
           "getters": false
         },
         "IdentifierSettings": {
-          "moduleName": "SystemStatechartExport",
-          "statemachinePrefix": "systemStatechartExport",
+          "moduleName": "SystemStatechart",
+          "statemachinePrefix": "systemStatechart",
           "separator": "_",
           "headerFilenameExtension": "h",
           "sourceFilenameExtension": "c"

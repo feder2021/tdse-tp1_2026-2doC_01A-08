@@ -8,8 +8,6 @@
 
 El modelo del sistema gestiona la lógica central de procesamiento (*Process*) bajo un esquema temporizado no bloqueante (*Update by Time Code*, $\text{period} = 1\text{ ms}$). Su función principal es recibir las señales limpias de los sensores de entrada (Cámara, Botón y Lazo Magnético), evaluar la secuencia del vehículo en la terminal de entrada (*Entry Terminal*) y ordenar las acciones al actuador de la barrera.
 
-En este modelo simplificado, se asume la permanencia del vehículo una vez detectado por la cámara, omitiendo cualquier evento de desdetección o abandono previo a la pulsación del botón.
-
 * **Estados del Modelo (`ST_SYS_NAME`):**
   - `ST_SYS_IDLE`: Estado de reposo sin vehículos detectados en la terminal.
   - `ST_SYS_WAIT_FOR_BTN`: Un vehículo ha sido detectado por la cámara (llave ON). El sistema aguarda a que el usuario presione el botón de solicitud.
@@ -29,7 +27,7 @@ En este modelo simplificado, se asume la permanencia del vehículo una vez detec
 
 ## 2. Tabla de Transición de Estados del Sistema (Paso 09)
 
-Secuencia principal estricta: `ST_SYS_IDLE` -> `ST_SYS_WAIT_FOR_BTN` -> `ST_SYS_BARRIER_OPEN` -> `ST_SYS_IDLE`
+Secuencia principal: `ST_SYS_IDLE` -> `ST_SYS_WAIT_FOR_BTN` -> `ST_SYS_BARRIER_OPEN` -> `ST_SYS_IDLE`
 
 | Current State | Event (Trigger) | [Guard] (Condición) | Next State | Actions / Effects (Excitaciones) |
 | :--- | :--- | :--- | :--- | :--- |
