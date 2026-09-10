@@ -8,6 +8,8 @@
 
 El modelo del actuador gestiona el dispositivo de salida del sistema, representado mediante un único LED indicador que simula los estados y movimientos de la barrera de acceso bajo un esquema temporizado no bloqueante (*Update by Time Code*, $\text{period} = 1\text{ ms}$).
 
+Para representar visualmente los estados de transición o movimiento físico de la barrera (apertura y cierre), este modelo utiliza patrones de parpadeo a distintas frecuencias en el LED (`DEL_FREQ_1` y `DEL_FREQ_2`). De esta forma, el LED permanece apagado en reposo, enciende de forma fija cuando la barrera está abierta, y conmuta periódicamente a diferentes velocidades durante sus movimientos de elevación y descenso sin utilizar esperas bloqueantes.
+
 * **Estados del Modelo (`ST_BARRIER_NAME`):**
   - `ST_BARRIER_CLOSED`: Barrera cerrada (LED apagado). Estado de reposo.
   - `ST_BARRIER_RAISING`: Barrera en proceso de apertura (LED titilando a frecuencia 1, ej. 200 ms).
@@ -38,7 +40,6 @@ El modelo del actuador gestiona el dispositivo de salida del sistema, representa
 
 Secuencia principal: `ST_BARRIER_CLOSED` -> `ST_BARRIER_RAISING` -> `ST_BARRIER_OPEN` -> `ST_BARRIER_LOWERING` -> `ST_BARRIER_CLOSED`
 
-Las transiciones autorreferentes dentro de los estados de movimiento (`ST_BARRIER_RAISING` y `ST_BARRIER_LOWERING`) evalúan explícitamente el contador de parpadeo `tick_blink` para decrementar las variables en cada paso de tiempo y emitir la conmutación `EV_LED_TOGGLE` cuando vence el temporizador de frecuencia.
 
 | Current State | Event (Trigger) | [Guard] (Condición) | Next State | Actions / Effects (Excitaciones) |
 | :--- | :--- | :--- | :--- | :--- |
