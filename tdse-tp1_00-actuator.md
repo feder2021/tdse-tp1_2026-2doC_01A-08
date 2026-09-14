@@ -19,7 +19,7 @@ Esta temporización de frecuencias se implementa mediante contadores decreciente
 * **Estados del Modelo (`ST_BARRIER_NAME`):**
   - `ST_BARRIER_CLOSED`: Barrera cerrada (LED apagado). Estado de reposo y restricción de paso.
   - `ST_BARRIER_RAISING`: Barrera en proceso de apertura (LED titilando a frecuencia 1, ej. 200 ms).
-  - `ST_BARRIER_OPEN`: Barrera completamente levantada (LED encendido fijo)[cite: 1].
+  - `ST_BARRIER_OPEN`: Barrera completamente levantada (LED encendido fijo).
   - `ST_BARRIER_LOWERING`: Barrera en proceso de cierre (LED titilando a frecuencia 2, ej. 500 ms).
 
 * **Eventos de Entrada / Disparadores (Triggers):**
