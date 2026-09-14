@@ -77,7 +77,7 @@ De esta manera, `tick` se utiliza como **guard** para condicionar las transicion
 
 El modelo implementa el ciclo completo de filtrado del botón:
 
-$$\text{ST\_BTN\_UP} \longrightarrow \text{ST\_BTN\_FALLING} \longrightarrow \text{ST\_BTN\_DOWN} \longrightarrow \text{ST\_BTN\_RISING} \longrightarrow \text{ST\_BTN\_UP}$$
+**ST_BTN_UP** &rarr; **ST_BTN_FALLING** &rarr; **ST_BTN_DOWN** &rarr; **ST_BTN_RISING** &rarr; **ST_BTN_UP**
 
 Las transiciones transitorias evalúan el contador decreciente `tick--` en cada evento periódico de 1 ms (`Tick`) y descartan cualquier ruido mecánico (*glitch*) si la señal física conmuta antes de expirar el tiempo de validación.
 
@@ -90,4 +90,4 @@ Las transiciones transitorias evalúan el contador decreciente `tick--` en cada 
 | **ST_BTN_DOWN** | `EV_BTN_RELEASED` | — | **ST_BTN_RISING** | `tick = DEL_BTN_DEBOUNCE` |
 | **ST_BTN_RISING** | `EV_BTN_PRESSED` | — | **ST_BTN_DOWN** | *(Descartar rebote / Glitch)*|
 | **ST_BTN_RISING** | `Tick` *(1 ms)* | `[tick > 0]` | **ST_BTN_RISING** | `tick--` |
-| **ST_BTN_RISING** | `Tick` *(1 ms)* | `[tick == 0]` *(Timeout)* | **ST_BTN_UP** | `EV_SYS_BTN_UP`|
+| **ST_BTN_RISING** | `Tick` *(1 ms)* | `[tick == 0]` *(Timeout)* | **ST_BTN_UP** | `EV_SYS_BTN_UP` |
