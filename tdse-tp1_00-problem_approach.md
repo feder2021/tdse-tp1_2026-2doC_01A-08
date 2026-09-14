@@ -1,31 +1,67 @@
-# # FIUBA - Electrónica - Taller de Sistemas Embebidos
-## Trabajo Práctico N°: 1 - Diagramas de Estado - Modelado
-### Archivo: tdse-tp1_00-problem_approach.md
+# FIUBA - Electrónica - Taller de Sistemas Embebidos
+
+## Trabajo Práctico N° 1 - Diagramas de Estado - Modelado
+
+### Archivo: `tdse-tp1_00-problem_approach.md`
 
 ---
 
-## 1. Descripción de la solución Intelligent Parking Management System (COMA Electronics)
-La arquitectura de referencia provista por COMA Electronics plantea un sistema automatizado e inteligente para la gestión integral de playas de estacionamiento (Automated Parking System). El sistema resuelve de manera eficiente el flujo vehicular dividiéndolo en dos grandes puntos críticos:
-- **Área de Entrada (Entry):** Gestionada por la máquina dispensadora de tickets (*Parking Ticket Dispenser Machine - PTDM*), la cual detecta la llegada del vehículo, valida las condiciones, interactúa con el usuario mediante displays e intercomunicadores, imprime un ticket con número de serie, fecha y hora, y finalmente emite una señal de apertura hacia la barrera de alta velocidad.
-- **Área de Pago Centralizado (Central Payment Point) y Salida (Exit):** Donde el usuario valida y abona su estadía en terminales automáticas antes de retornar a su vehículo, permitiendo un acceso rápido y validado en la terminal de egreso bajo un tiempo de gracia preestablecido.
+## 1. Solución de COMA Electronics
+
+Como referencia para el desarrollo del proyecto se toma el **Intelligent Parking Management System** de COMA Electronics, un sistema destinado a la gestión integral y automatizada de estacionamientos (*Automated Parking System*).
+
+La solución se divide en dos áreas principales:
+
+* **Área de Entrada (Entry):** Gestionada por la máquina dispensadora de tickets (*Parking Ticket Dispenser Machine* - PTDM), la cual detecta la llegada del vehículo, valida las condiciones, interactúa con el usuario mediante pantallas e intercomunicadores, imprime un ticket con fecha/hora y emite la señal de apertura a la barrera vehicular.
+* **Área de Pago Centralizado y Salida (Exit):** Terminales automáticas para el cobro y validación de la estadía con tiempo de gracia antes del egreso.
+
+Dentro de esta solución se toma como referencia la **Parking Ticket Dispenser Machine (Entry)**.
 
 ---
 
-## 2. Descripción de la implementación: Parking Ticket Dispenser Machine (Entry)
-Para el desarrollo del Producto Mínimo Viable (MVP) en el marco de la asignatura, la implementación se centra exclusivamente en modelar y replicar el comportamiento de la **Parking Ticket Dispenser Machine (Entry)**. 
-El sistema se desglosa y organiza de forma modular mediante una estructura de tres capas de comportamiento ("escrutar, procesar, actuar") sincronizada a través de un esquema temporizado no bloqueante (*Update by Time Code*) de ejecución cíclica cada 1 milisegundo ($1\text{ mS}$):
-1. **Módulo de Sensores (Scrutinize / Entradas Digitales):** Se encarga de capturar y filtrar las señales del mundo físico (como la presencia del vehículo mediante lazo magnético/cámara, el botón de tickets y el estado de la barrera). En el prototipo de laboratorio, los sensores físicos se reemplazan por pulsadores e interruptores del tipo *Dip Switch*.
-2. **Módulo del Sistema (Process / Interfaz Lógica):** Recibe los mensajes procesados desde los sensores, evalúa las máquinas de estados (FSM) correspondientes y toma decisiones lógicas sobre qué acción disparar a continuación.
-3. **Módulo de Actuadores (Act / Salidas Digitales):** Ejecuta las órdenes enviadas por el sistema (displays, impresora de tickets, comunicación con el servidor central y control del motor/apertura de la barrera). En el prototipo, los actuadores reales se reemplazan mediante el uso de LEDs indicadores.
+## 2. Implementación de la Parking Ticket Dispenser Machine (Entry)
+
+Para el desarrollo del proyecto se implementa un **Producto Mínimo Viable (MVP)** que replica el comportamiento de la terminal de entrada.
+
+El comportamiento del sistema se organiza de forma modular en tres capas (*Escrutar, Procesar, Actuar*) sincronizadas mediante un esquema temporizado no bloqueante (*Update by Time Code*) de ejecución cíclica cada 1 ms ($1\text{ ms}$):
+
+* **Sensor (Escrutar):** Encargado de capturar y filtrar las entradas del sistema (como `Camera`, `Button` y `Sensor Coil`) aplicando algoritmos anti-rebote (*debouncing*).
+* **System (Procesar):** Encargado de procesar los eventos limpios recibidos desde los sensores, evaluar la máquina de estados lógicos (FSM) y determinar las acciones a realizar.
+* **Actuator (Actuar):** Encargado de controlar el comportamiento de las salidas digitales (como `Display`, `Printer`, `Barrier` y `Server`).
+
+La arquitectura de comunicación entre módulos es:
+
+$$\text{Sensor (Escrutar)} \longrightarrow \text{System (Procesar)} \longrightarrow \text{Actuator (Actuar)}$$
 
 ---
 
-## 3. Enunciado de los modelos para el comportamiento en código C (Temporizado, T = 1mS)
-Para gestionar de forma robusta y no bloqueante la lógica del sistema bajo una ejecución cíclica de $1\text{ mS}$, se definen tres modelos principales basados en máquinas de estados de Harel/UML implementados mediante lenguajes estructurados:
+## 3. Modelos de Comportamiento de los Módulos (Temporizado, $T = 1\text{ ms}$)
 
-- **Modelo Sensor (`Sensor Statechart`):** 
-  Modela el comportamiento de escrutinio de un dispositivo de entrada binario (un pulsador o interruptor). Su función principal es aplicar un algoritmo anti-rebote (*debouncing*) utilizando un temporizador decreciente (`tick--`) para filtrar transitorios y ruidos mecánicos de los contactos físicos, generando eventos limpios y estables hacia el sistema principal (`EV_SYS_...`).
-- **Modelo Sistema (`System Statechart`):** 
-  Modela el núcleo lógico de procesamiento de la máquina de entrada. Recibe los eventos validados de los sensores (por ejemplo, la pulsación limpia del botón de tickets), evalúa las condiciones de ocupación o disponibilidad del sistema, y emite las órdenes y mensajes correspondientes hacia los actuadores.
-- **Modelo Actuador (`Actuator Statechart`):** 
-  Modela el comportamiento de las salidas digitales (como el accionamiento de la barrera representada mediante un LED o la gestión de estados intermitentes/pulsos). Garantiza que las respuestas físicas del sistema se ejecuten de manera sincronizada y sin bloquear la CPU del microcontrolador.
+Los tres módulos se implementan en código C como máquinas de estados temporizadas de ejecución no bloqueante:
+
+* **Modelo Sensor (`Sensor Statechart`):** Ejecutado cada 1 ms. Recorre las entradas digitales, filtra ruidos mecánicos mediante temporizadores decrecientes (`tick--`) e inyecta eventos validados (`EV_SYS_...`) hacia el módulo central.
+* **Modelo Sistema (`System Statechart`):** Ejecutado cada 1 ms. Recibe las señales de los sensores, evalúa las condiciones de la terminal y genera las órdenes dirigidas hacia los actuadores (`EV_ACT_...`).
+* **Modelo Actuador (`Actuator Statechart`):** Ejecutado cada 1 ms. Recibe las órdenes del sistema y controla el estado de las salidas físicas o patrones visuales (encendido, apagado, parpadeos/pulsos) sin bloquear la CPU.
+
+---
+
+## 4. Reemplazo de Sensores y Actuadores en Prototipo
+
+Para las pruebas de laboratorio se sustituyen los componentes físicos reales por periféricos binarios simples:
+
+### Digital Inputs $\rightarrow$ Sensor
+
+| Sensor Real | Reemplazo | Descripción / Modus Operandi |
+| :--- | :--- | :--- |
+| `Camera` | Interruptor DIP Switch | Representa la presencia continua de un vehículo en la entrada. |
+| `Button` | Pulsador | Simula la acción momentánea del usuario al solicitar un ticket. |
+| `Sensor Coil` | Interruptor DIP Switch | Simula la activación del lazo magnético cuando el auto cruza. |
+
+### Digital Outputs $\rightarrow$ Actuator
+
+| Actuador Real | Reemplazo | Descripción / Modus Operandi |
+| :--- | :--- | :--- |
+| `Display` | LED | Indicador de estado / mensaje de bienvenida. |
+| `Printer` | LED | Representación visual del proceso de impresión activo. |
+| `Barrier` | LED | Indicador visual de barrera levantada (encendido) / cerrada (apagado). |
+| `Server` | LED | Confirmación de comunicación/registro con el servidor central. |
